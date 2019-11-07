@@ -27,7 +27,6 @@ const text = (() => {
       checkboxes[i].addEventListener('click', finish);
       deleteBtns[i].addEventListener('click', deleteItem);
       assignments[i].addEventListener('click', edit)
-      assignments[i].addEventListener('keypress', commit)
     }
 
     _form.addEventListener('submit', formHandler);
@@ -65,13 +64,24 @@ const text = (() => {
 
   // event handler fyrir það að breyta færslu
   function edit(e) {
-    e.target.contentEditable = true;
+    const originalString = e.target.innerText;
+    const element = document.createElement('input');
+    element.classList.add('item__edit');
+    element.value = originalString;
+    e.target.parentNode.insertBefore(element, e.target);
+    element.focus();
+    e.target.remove();
+    element.addEventListener('keypress', commit);
   }
 
   // event handler fyrir það að klára að breyta færslu
   function commit(e) {
     if (e.keyCode === ENTER_KEYCODE) {
-      e.target.contentEditable = false;
+      const originalString = e.target.value;
+      const spanElement = el('span', 'item__text', edit);
+      e.target.parentNode.insertBefore(spanElement, e.target);
+      e.target.remove();
+      spanElement.innerText = originalString;
     }
   }
 
@@ -88,7 +98,6 @@ const text = (() => {
 
     const spanElement = el('span', 'item__text', edit);
     spanElement.appendChild(document.createTextNode(value));
-    spanElement.addEventListener('keypress', commit)
 
     node.appendChild(checkbox);
     node.appendChild(spanElement);
